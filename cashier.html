@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cashier Dashboard - Restaurant POS</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="dashboard">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h2>🍔 FastFood POS</h2>
+            <p id="userRole" class="user-role"></p>
+        </div>
+        <ul class="sidebar-nav">
+            <li><a href="#" class="nav-link active" data-page="pending">📋 Pending Orders</a></li>
+            <li><a href="#" class="nav-link" data-page="completed">✅ Completed Orders</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <button class="logout-btn" id="logoutBtn">🚪 Logout</button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <div>
+                <h1 id="pageTitle">Pending Orders</h1>
+            </div>
+            <div class="header-info">
+                <p>Time: <span id="currentTime"></span></p>
+                <p id="userInfo"></p>
+            </div>
+        </div>
+
+        <!-- Pending Orders Page -->
+        <div id="pendingPage" class="page-content">
+            <div class="cashier-dashboard">
+                <div class="orders-list" id="pendingOrdersList"></div>
+                <div class="payment-summary">
+                    <h2>💳 Payment</h2>
+                    <div class="payment-method">
+                        <label>Payment Method</label>
+                        <select id="paymentMethod">
+                            <option value="cash">💵 Cash</option>
+                            <option value="card">💳 Card</option>
+                            <option value="upi">📱 UPI</option>
+                            <option value="wallet">👛 Wallet</option>
+                        </select>
+                    </div>
+
+                    <div id="orderSummary" style="display: none; margin-bottom: 20px; padding: 15px; background-color: var(--light-bg); border-radius: 8px;">
+                        <h3 style="margin-bottom: 10px;">Order Summary</h3>
+                        <p><strong>Order ID:</strong> <span id="selectedOrderId"></span></p>
+                        <p><strong>Customer:</strong> <span id="selectedCustomer"></span></p>
+                        <p><strong>Total Amount:</strong> <span id="selectedTotal" style="color: var(--primary-color); font-weight: 700; font-size: 1.2em;"></span></p>
+                    </div>
+
+                    <div class="payment-actions">
+                        <button class="btn btn-warning" id="printBtn" style="display: none;">🖨️ Print Order Slip</button>
+                        <button class="btn btn-success" id="completePaymentBtn" style="display: none;">💰 Complete Payment</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Completed Orders Page -->
+        <div id="completedPage" class="page-content hidden">
+            <div class="orders-list" id="completedOrdersList"></div>
+        </div>
+    </div>
+
+    <!-- Print Modal -->
+    <div id="printModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Order Slip</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="order-slip print-area" id="orderSlip"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closePrintModal()">Close</button>
+                <button class="btn btn-primary" onclick="printOrderSlip()">🖨️ Print</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/cashier.js"></script>
+</body>
+</html>

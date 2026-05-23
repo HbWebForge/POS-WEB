@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manager Dashboard - Restaurant POS</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="dashboard">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h2>🍔 FastFood POS</h2>
+            <p id="userRole" class="user-role"></p>
+        </div>
+        <ul class="sidebar-nav">
+            <li><a href="#" class="nav-link active" data-page="dashboard">📊 Dashboard</a></li>
+            <li><a href="#" class="nav-link" data-page="reports">📈 Reports</a></li>
+            <li><a href="#" class="nav-link" data-page="categories">🏷️ Categories</a></li>
+            <li><a href="#" class="nav-link" data-page="products">🍽️ Products</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <button class="logout-btn" id="logoutBtn">🚪 Logout</button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <div>
+                <h1 id="pageTitle">Dashboard</h1>
+            </div>
+            <div class="header-info">
+                <p>Time: <span id="currentTime"></span></p>
+                <p id="userInfo"></p>
+            </div>
+        </div>
+
+        <!-- Dashboard Page -->
+        <div id="dashboardPage" class="page-content">
+            <!-- Statistics -->
+            <div class="manager-dashboard">
+                <div class="stat-card">
+                    <div class="stat-label">Today's Revenue</div>
+                    <div class="stat-value" id="todayRevenue">₹0</div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-label">Total Orders (Today)</div>
+                    <div class="stat-value" id="todayOrders">0</div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="stat-label">Pending Orders</div>
+                    <div class="stat-value" id="pendingCount">0</div>
+                </div>
+                <div class="stat-card danger">
+                    <div class="stat-label">Total Products</div>
+                    <div class="stat-value" id="productCount">0</div>
+                </div>
+            </div>
+
+            <!-- Reports & Top Products -->
+            <div class="manager-content">
+                <div class="report-section">
+                    <h2 class="section-title">📊 Top Selling Products (This Month)</h2>
+                    <ul class="top-products" id="topProducts"></ul>
+                </div>
+
+                <div class="report-section">
+                    <h2 class="section-title">💰 Revenue Summary</h2>
+                    <div style="margin-top: 20px;">
+                        <div style="padding: 15px; background-color: var(--light-bg); border-radius: 8px; margin-bottom: 10px;">
+                            <p><strong>Daily Revenue:</strong> <span id="dailyRev" style="color: var(--primary-color); font-weight: 700;">₹0</span></p>
+                        </div>
+                        <div style="padding: 15px; background-color: var(--light-bg); border-radius: 8px; margin-bottom: 10px;">
+                            <p><strong>Weekly Revenue:</strong> <span id="weeklyRev" style="color: var(--primary-color); font-weight: 700;">₹0</span></p>
+                        </div>
+                        <div style="padding: 15px; background-color: var(--light-bg); border-radius: 8px;">
+                            <p><strong>Monthly Revenue:</strong> <span id="monthlyRev" style="color: var(--primary-color); font-weight: 700;">₹0</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reports Page -->
+        <div id="reportsPage" class="page-content hidden">
+            <div class="report-section">
+                <h2 class="section-title">📈 Sales Reports</h2>
+
+                <div class="report-filters">
+                    <select id="reportType">
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                    </select>
+                    <input type="date" id="reportDate">
+                    <button class="btn btn-primary" onclick="managerDashboard.generateReport()">Generate Report</button>
+                </div>
+
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Type</th>
+                            <th>Waiter</th>
+                            <th>Items</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reportTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Categories Page -->
+        <div id="categoriesPage" class="page-content hidden">
+            <div class="category-section">
+                <h2 class="section-title">🏷️ Manage Categories</h2>
+
+                <div class="add-category-form">
+                    <input type="text" id="categoryNameInput" placeholder="Category Name">
+                    <input type="text" id="categoryIconInput" placeholder="Icon (emoji)">
+                    <button class="btn btn-primary" onclick="managerDashboard.addCategory()">Add Category</button>
+                </div>
+
+                <div class="category-list" id="categoryList"></div>
+            </div>
+        </div>
+
+        <!-- Products Page -->
+        <div id="productsPage" class="page-content hidden">
+            <div class="category-section">
+                <h2 class="section-title">🍽️ Manage Products</h2>
+
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px;">
+                    <input type="text" id="productNameInput" placeholder="Product Name">
+                    <input type="number" id="productPriceInput" placeholder="Price" min="0">
+                    <select id="productCategorySelect"></select>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px;">
+                    <input type="text" id="productIconInput" placeholder="Icon (emoji)">
+                    <button class="btn btn-primary" onclick="managerDashboard.addProduct()">Add Product</button>
+                </div>
+
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>Icon</th>
+                            <th>Product Name</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productList"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="editTitle">Edit Item</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="editNameInput">
+                </div>
+                <div class="form-group">
+                    <label>Value</label>
+                    <input type="text" id="editValueInput">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="managerDashboard.saveEdit()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/manager.js"></script>
+</body>
+</html>
