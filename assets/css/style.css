@@ -200,6 +200,7 @@ body {
     grid-template-columns: 250px 1fr;
     min-height: 100vh;
     background-color: var(--light-bg);
+   
 }
 
 .sidebar {
@@ -208,6 +209,8 @@ body {
     padding: 20px;
     display: flex;
     flex-direction: column;
+   
+    
 }
 
 .sidebar-header {
@@ -230,6 +233,7 @@ body {
 .sidebar-nav {
     flex: 1;
     list-style: none;
+  
 }
 
 .sidebar-nav li {
@@ -865,7 +869,6 @@ body {
 
 /* ===== MODAL ===== */
 .modal {
-    display: none;
     position: fixed;
     top: 0;
     left: 0;
@@ -875,6 +878,11 @@ body {
     z-index: 1000;
     justify-content: center;
     align-items: center;
+    display: flex;
+}
+
+.modal.hidden {
+    display: none !important;
 }
 
 .modal.active {

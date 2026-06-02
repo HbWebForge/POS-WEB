@@ -1,5 +1,15 @@
 // Authentication & Database Module
 const AuthDB = {
+    // Restaurant Details
+    restaurant: {
+        name: 'FastFood Restaurant',
+        address: '123 Main Street, Karachi, Pakistan',
+        phone: '+92-300-1234567',
+        bankAccount: { name: 'Bank Account', number: '12345-67890123-4' },
+        easypaisa: { name: 'EasyPaisa Account', number: '0300-1234567' },
+        jazzcash: { name: 'JazzCash Account', number: '0310-1234567' }
+    },
+
     // Demo users
     users: {
         waiter: { username: 'waiter', password: '1234', role: 'waiter', name: 'Waiter' },
@@ -16,19 +26,21 @@ const AuthDB = {
     ],
 
     products: [
-        { id: 1, name: 'Burger', category: 1, price: 150, icon: '🍔' },
-        { id: 2, name: 'Cheese Burger', category: 1, price: 180, icon: '🍔' },
-        { id: 3, name: 'Double Burger', category: 1, price: 250, icon: '🍔' },
-        { id: 4, name: 'Margarita Pizza', category: 2, price: 200, icon: '🍕' },
-        { id: 5, name: 'Pepperoni Pizza', category: 2, price: 220, icon: '🍕' },
-        { id: 6, name: 'Coke', category: 3, price: 50, icon: '🥤' },
-        { id: 7, name: 'Sprite', category: 3, price: 50, icon: '🥤' },
-        { id: 8, name: 'Juice', category: 3, price: 60, icon: '🥤' },
-        { id: 9, name: 'French Fries', category: 4, price: 80, icon: '🍟' },
-        { id: 10, name: 'Chicken Nuggets', category: 4, price: 120, icon: '🍗' },
-        { id: 11, name: 'Cake', category: 5, price: 100, icon: '🍰' },
-        { id: 12, name: 'Ice Cream', category: 5, price: 80, icon: '🍦' }
+        { id: 1, name: 'Burger', category: 1, price: 500, icon: '🍔' },
+        { id: 2, name: 'Cheese Burger', category: 1, price: 600, icon: '🍔' },
+        { id: 3, name: 'Double Burger', category: 1, price: 800, icon: '🍔' },
+        { id: 4, name: 'Margarita Pizza', category: 2, price: 800, icon: '🍕' },
+        { id: 5, name: 'Pepperoni Pizza', category: 2, price: 900, icon: '🍕' },
+        { id: 6, name: 'Coke', category: 3, price: 150, icon: '🥤' },
+        { id: 7, name: 'Sprite', category: 3, price: 150, icon: '🥤' },
+        { id: 8, name: 'Juice', category: 3, price: 200, icon: '🥤' },
+        { id: 9, name: 'French Fries', category: 4, price: 300, icon: '🍟' },
+        { id: 10, name: 'Chicken Nuggets', category: 4, price: 400, icon: '🍗' },
+        { id: 11, name: 'Cake', category: 5, price: 350, icon: '🍰' },
+        { id: 12, name: 'Ice Cream', category: 5, price: 300, icon: '🍦' }
     ],
+
+    deals: [],
 
     orders: [],
     orderCounter: 1000,
@@ -43,6 +55,7 @@ const AuthDB = {
             const data = JSON.parse(stored);
             this.categories = data.categories || this.categories;
             this.products = data.products || this.products;
+            this.deals = data.deals || [];
             this.orders = data.orders || [];
             this.orderCounter = data.orderCounter || 1000;
         }
@@ -52,6 +65,7 @@ const AuthDB = {
         const data = {
             categories: this.categories,
             products: this.products,
+            deals: this.deals,
             orders: this.orders,
             orderCounter: this.orderCounter
         };
@@ -114,6 +128,15 @@ class Auth {
     }
 }
 
+// Currency Formatting Function
+function formatCurrency(amount) {
+    return new Intl.NumberFormat('ur-PK', {
+        style: 'currency',
+        currency: 'PKR',
+        minimumFractionDigits: 0
+    }).format(amount);
+}
+
 // Initialize Database
 AuthDB.init();
 
@@ -171,6 +194,8 @@ function addOrder(orderData) {
         id: generateOrderId(),
         ...orderData,
         createdAt: new Date().toLocaleString(),
+        submittedAt: new Date().toLocaleString(),
+        editHistory: [],
         status: 'pending'
     };
     AuthDB.orders.push(order);
@@ -185,6 +210,55 @@ function updateOrderStatus(orderId, status) {
         if (status === 'completed') {
             order.completedAt = new Date().toLocaleString();
         }
+        AuthDB.saveToLocalStorage();
+        return order;
+    }
+    return null;
+}
+
+// Update order items (add/edit/delete)
+function updateOrderItems(orderId, items) {
+    const order = AuthDB.orders.find(o => o.id === orderId);
+    if (order && order.status === 'pending') {
+        const oldItems = JSON.stringify(order.items);
+        order.items = items;
+        order.editHistory = order.editHistory || [];
+        order.editHistory.push({
+            editedAt: new Date().toLocaleString(),
+            oldItems: oldItems
+        });
+        // Recalculate totals
+        order.subtotal = items.reduce((sum, item) => sum + (item.total || 0), 0);
+        order.tax = order.subtotal * 0.05;
+        order.total = order.subtotal + order.tax;
+        AuthDB.saveToLocalStorage();
+        return order;
+    }
+    return null;
+}
+
+// Add single item to order
+function addItemToOrder(orderId, item) {
+    const order = AuthDB.orders.find(o => o.id === orderId);
+    if (order && order.status === 'pending') {
+        order.items.push(item);
+        order.subtotal = order.items.reduce((sum, item) => sum + (item.total || 0), 0);
+        order.tax = order.subtotal * 0.05;
+        order.total = order.subtotal + order.tax;
+        AuthDB.saveToLocalStorage();
+        return order;
+    }
+    return null;
+}
+
+// Remove item from order
+function removeItemFromOrder(orderId, itemIndex) {
+    const order = AuthDB.orders.find(o => o.id === orderId);
+    if (order && order.status === 'pending') {
+        order.items.splice(itemIndex, 1);
+        order.subtotal = order.items.reduce((sum, item) => sum + (item.total || 0), 0);
+        order.tax = order.subtotal * 0.05;
+        order.total = order.subtotal + order.tax;
         AuthDB.saveToLocalStorage();
         return order;
     }

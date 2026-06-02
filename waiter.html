@@ -68,7 +68,12 @@
                     <div class="customer-info">
                         <input type="text" id="customerName" placeholder="Customer Name (optional)">
                         <input type="text" id="tableNumber" placeholder="Table No. (for dine-in)" data-type="dine-in">
-                        <input type="text" id="deliveryAddress" placeholder="Delivery Address" data-type="delivery" style="display: none;">
+                        <div id="deliveryFields" style="display: none;">
+                            <input type="text" id="deliveryName" placeholder="Customer Name *" data-type="delivery">
+                            <input type="text" id="deliveryAddress" placeholder="Delivery Address *" data-type="delivery">
+                            <input type="tel" id="deliveryPhone" placeholder="Phone Number *" data-type="delivery">
+                            <input type="number" id="deliveryCharge" placeholder="Delivery Charge (Rs.)" data-type="delivery" value="">
+                        </div>
                     </div>
 
                     <div class="cart-items" id="cartItems"></div>
@@ -76,15 +81,15 @@
                     <div class="cart-summary">
                         <div class="summary-row">
                             <span>Subtotal:</span>
-                            <span id="subtotal">₹0</span>
+                            <span id="subtotal">Rs. 0</span>
                         </div>
                         <div class="summary-row">
-                            <span>Tax (5%):</span>
-                            <span id="taxAmount">₹0</span>
+                            <span>Discount (5%):</span>
+                            <span id="taxAmount">Rs. 0</span>
                         </div>
                         <div class="summary-row total">
                             <span>Total:</span>
-                            <span id="totalAmount">₹0</span>
+                            <span id="totalAmount">Rs. 0</span>
                         </div>
                     </div>
 
@@ -98,7 +103,13 @@
 
         <!-- Active Orders Page -->
         <div id="activeOrdersPage" class="page-content hidden">
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <button class="btn btn-secondary" onclick="backToNewOrder()">⬅️ Back to New Order</button>
+            </div>
             <div class="orders-list" id="activeOrdersList"></div>
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <button class="btn btn-secondary" onclick="backToNewOrder()">⬅️ Back to New Order</button>
+            </div>
         </div>
     </div>
 
@@ -110,7 +121,33 @@
                 <button class="modal-close">&times;</button>
             </div>
             <div class="modal-body" id="orderDetailsBody"></div>
+            <div class="modal-body hidden" id="orderEditBody" style="max-height: 70vh; overflow-y: auto;">
+                <!-- Edit Order Type -->
+                <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #ddd;">
+                    <h3>Change Order Type</h3>
+                    <div class="order-type-selector" id="editOrderTypeSelector">
+                        <button class="order-type-btn" data-type="dine-in">🪑 Dine-In</button>
+                        <button class="order-type-btn" data-type="takeaway">🛍️ Takeaway</button>
+                        <button class="order-type-btn" data-type="delivery">🚚 Delivery</button>
+                    </div>
+                </div>
+
+                <!-- Add Items Section -->
+                <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #ddd;">
+                    <h3>Add More Items</h3>
+                    <div class="category-tabs" id="editCategoryTabs"></div>
+                    <div class="menu-items" id="editMenuItems"></div>
+                </div>
+
+                <!-- Current Items -->
+                <div>
+                    <h3>Current Items</h3>
+                    <div class="cart-items" id="editCartItems"></div>
+                </div>
+            </div>
             <div class="modal-footer">
+                <button class="btn btn-secondary" id="editOrderBtn" style="display: none;">✏️ Edit Order</button>
+                <button class="btn btn-secondary" id="saveEditBtn" style="display: none;">💾 Save Changes</button>
                 <button class="btn btn-secondary" onclick="closeOrderDetailsModal()">Close</button>
             </div>
         </div>

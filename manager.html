@@ -15,7 +15,10 @@
         </div>
         <ul class="sidebar-nav">
             <li><a href="#" class="nav-link active" data-page="dashboard">📊 Dashboard</a></li>
+            <li><a href="#" class="nav-link" data-page="orders">📋 Manage Orders</a></li>
+            <li><a href="#" class="nav-link" data-page="new-order">📝 Create Order</a></li>
             <li><a href="#" class="nav-link" data-page="reports">📈 Reports</a></li>
+            <li><a href="#" class="nav-link" data-page="deals">🎁 Deals</a></li>
             <li><a href="#" class="nav-link" data-page="categories">🏷️ Categories</a></li>
             <li><a href="#" class="nav-link" data-page="products">🍽️ Products</a></li>
         </ul>
@@ -38,11 +41,14 @@
 
         <!-- Dashboard Page -->
         <div id="dashboardPage" class="page-content">
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <button class="btn btn-secondary" onclick="backToDashboard()">⬅️ Back to Dashboard</button>
+            </div>
             <!-- Statistics -->
             <div class="manager-dashboard">
                 <div class="stat-card">
                     <div class="stat-label">Today's Revenue</div>
-                    <div class="stat-value" id="todayRevenue">₹0</div>
+                    <div class="stat-value" id="todayRevenue">0</div>
                 </div>
                 <div class="stat-card success">
                     <div class="stat-label">Total Orders (Today)</div>
@@ -69,14 +75,88 @@
                     <h2 class="section-title">💰 Revenue Summary</h2>
                     <div style="margin-top: 20px;">
                         <div style="padding: 15px; background-color: var(--light-bg); border-radius: 8px; margin-bottom: 10px;">
-                            <p><strong>Daily Revenue:</strong> <span id="dailyRev" style="color: var(--primary-color); font-weight: 700;">₹0</span></p>
+                            <p><strong>Daily Revenue:</strong> <span id="dailyRev" style="color: var(--primary-color); font-weight: 700;">Rs. 0</span></p>
                         </div>
                         <div style="padding: 15px; background-color: var(--light-bg); border-radius: 8px; margin-bottom: 10px;">
-                            <p><strong>Weekly Revenue:</strong> <span id="weeklyRev" style="color: var(--primary-color); font-weight: 700;">₹0</span></p>
+                            <p><strong>Weekly Revenue:</strong> <span id="weeklyRev" style="color: var(--primary-color); font-weight: 700;">Rs. 0</span></p>
                         </div>
                         <div style="padding: 15px; background-color: var(--light-bg); border-radius: 8px;">
-                            <p><strong>Monthly Revenue:</strong> <span id="monthlyRev" style="color: var(--primary-color); font-weight: 700;">₹0</span></p>
+                            <p><strong>Monthly Revenue:</strong> <span id="monthlyRev" style="color: var(--primary-color); font-weight: 700;">Rs. 0</span></p>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Manage Orders Page -->
+        <div id="ordersPage" class="page-content hidden">
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <button class="btn btn-secondary" onclick="backToDashboard()">⬅️ Back to Dashboard</button>
+            </div>
+            <div class="orders-list" id="managerOrdersList"></div>
+        </div>
+
+        <!-- Create Order Page (Manager) -->
+        <div id="managerNewOrderPage" class="page-content hidden">
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <button class="btn btn-secondary" onclick="backToDashboard()">⬅️ Back to Dashboard</button>
+            </div>
+            <div class="waiter-dashboard">
+                <!-- Menu Section -->
+                <div>
+                    <!-- Order Type Selection -->
+                    <div class="menu-section">
+                        <h3>Order Type</h3>
+                        <div class="order-type-selector" id="managerOrderTypeSelector">
+                            <button class="order-type-btn active" data-type="dine-in">🪑 Dine-In</button>
+                            <button class="order-type-btn" data-type="takeaway">🛍️ Takeaway</button>
+                            <button class="order-type-btn" data-type="delivery">🚚 Delivery</button>
+                        </div>
+                    </div>
+
+                    <!-- Menu Section -->
+                    <div class="menu-section">
+                        <h2>Menu</h2>
+                        <div class="category-tabs" id="managerCategoryTabs"></div>
+                        <div class="menu-items" id="managerMenuItems"></div>
+                    </div>
+                </div>
+
+                <!-- Order Cart -->
+                <div class="order-cart">
+                    <div class="cart-header">🛒 Order Cart</div>
+                    
+                    <div class="customer-info">
+                        <input type="text" id="managerCustomerName" placeholder="Customer Name (optional)">
+                        <input type="text" id="managerTableNumber" placeholder="Table No. (for dine-in)" data-type="dine-in">
+                        <div id="managerDeliveryFields" style="display: none;">
+                            <input type="text" id="managerDeliveryName" placeholder="Customer Name *" data-type="delivery">
+                            <input type="text" id="managerDeliveryAddress" placeholder="Delivery Address *" data-type="delivery">
+                            <input type="tel" id="managerDeliveryPhone" placeholder="Phone Number *" data-type="delivery">
+                            <input type="number" id="managerDeliveryCharge" placeholder="Delivery Charge (Rs.)" data-type="delivery" value="100">
+                        </div>
+                    </div>
+
+                    <div class="cart-items" id="managerCartItems"></div>
+
+                    <div class="cart-summary">
+                        <div class="summary-row">
+                            <span>Subtotal:</span>
+                            <span id="managerSubtotal">Rs. 0</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Tax (5%):</span>
+                            <span id="managerTaxAmount">Rs. 0</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>Total:</span>
+                            <span id="managerTotalAmount">Rs. 0</span>
+                        </div>
+                    </div>
+
+                    <div class="cart-actions">
+                        <button class="btn btn-secondary btn-complete" id="managerClearCartBtn">Clear Cart</button>
+                        <button class="btn btn-primary btn-complete" id="managerSubmitOrderBtn">📤 Submit Order</button>
                     </div>
                 </div>
             </div>
@@ -84,6 +164,9 @@
 
         <!-- Reports Page -->
         <div id="reportsPage" class="page-content hidden">
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <button class="btn btn-secondary" onclick="backToDashboard()">⬅️ Back to Dashboard</button>
+            </div>
             <div class="report-section">
                 <h2 class="section-title">📈 Sales Reports</h2>
 
@@ -117,6 +200,9 @@
 
         <!-- Categories Page -->
         <div id="categoriesPage" class="page-content hidden">
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <button class="btn btn-secondary" onclick="backToDashboard()">⬅️ Back to Dashboard</button>
+            </div>
             <div class="category-section">
                 <h2 class="section-title">🏷️ Manage Categories</h2>
 
@@ -130,8 +216,39 @@
             </div>
         </div>
 
+        <!-- Deals Page -->
+        <div id="dealsPage" class="page-content hidden">
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <button class="btn btn-secondary" onclick="backToDashboard()">⬅️ Back to Dashboard</button>
+            </div>
+            <div class="category-section">
+                <h2 class="section-title">🎁 Create Deal</h2>
+
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px;">
+                    <input type="text" id="dealNameInput" placeholder="Deal Name (e.g., Combo Pack)">
+                    <input type="text" id="dealIconInput" placeholder="Icon (emoji)" value="🎁">
+                </div>
+
+                <div style="margin-bottom: 20px; padding: 15px; background-color: #f0f0f0; border-radius: 8px;">
+                    <h3>Select Products for Deal</h3>
+                    <div id="dealProductSelector" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px;"></div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px;">
+                    <input type="number" id="dealPriceInput" placeholder="Deal Price (Rs.)" min="0">
+                    <button class="btn btn-primary" onclick="managerDashboard.createDeal()">Create Deal</button>
+                </div>
+
+                <h2 class="section-title" style="margin-top: 30px;">Active Deals</h2>
+                <div class="deals-list" id="dealsList"></div>
+            </div>
+        </div>
+
         <!-- Products Page -->
         <div id="productsPage" class="page-content hidden">
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <button class="btn btn-secondary" onclick="backToDashboard()">⬅️ Back to Dashboard</button>
+            </div>
             <div class="category-section">
                 <h2 class="section-title">🍽️ Manage Products</h2>
 
@@ -162,8 +279,63 @@
         </div>
     </div>
 
+    <!-- Manager Order Edit Modal -->
+    <div id="managerOrderEditModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="managerEditOrderId">Edit Order</h2>
+                <button class="modal-close" onclick="closeManagerOrderEditModal()">&times;</button>
+            </div>
+            <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                <!-- Edit Order Type -->
+                <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #ddd;">
+                    <h3>Change Order Type</h3>
+                    <div class="order-type-selector" id="managerEditOrderTypeSelector">
+                        <button class="order-type-btn" data-type="dine-in">🪑 Dine-In</button>
+                        <button class="order-type-btn" data-type="takeaway">🛍️ Takeaway</button>
+                        <button class="order-type-btn" data-type="delivery">🚚 Delivery</button>
+                    </div>
+                </div>
+
+                <!-- Add Items Section -->
+                <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #ddd;">
+                    <h3>Add More Items</h3>
+                    <div class="category-tabs" id="managerEditCategoryTabs"></div>
+                    <div class="menu-items" id="managerEditMenuItems"></div>
+                </div>
+
+                <!-- Current Items -->
+                <div>
+                    <h3>Current Items</h3>
+                    <div class="cart-items" id="managerEditCartItems"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="managerSaveEditBtn">💾 Save Changes</button>
+                <button class="btn btn-secondary" onclick="closeManagerOrderEditModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manager Print Modal -->
+    <div id="managerPrintModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Order Slip</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="order-slip print-area" id="managerOrderSlip"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeManagerPrintModal()">Close</button>
+                <button class="btn btn-primary" onclick="printManagerOrderSlip()">🖨️ Print</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Edit Modal -->
-    <div id="editModal" class="modal">
+    <div id="editModal" class="modal hidden">
         <div class="modal-content">
             <div class="modal-header">
                 <h2 id="editTitle">Edit Item</h2>
@@ -188,5 +360,22 @@
 
     <script src="assets/js/auth.js"></script>
     <script src="assets/js/manager.js"></script>
+    <script>
+        function backToDashboard() {
+            if (managerDashboard) managerDashboard.changePage('dashboard');
+        }
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('active');
+        }
+        function closeManagerOrderEditModal() {
+            document.getElementById('managerOrderEditModal').classList.add('hidden');
+        }
+        function closeManagerPrintModal() {
+            document.getElementById('managerPrintModal').classList.add('hidden');
+        }
+        function printManagerOrderSlip() {
+            window.print();
+        }
+    </script>
 </body>
 </html>
