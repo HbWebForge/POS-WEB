@@ -144,8 +144,8 @@ class ManagerDashboard {
                 </div>
                 <div class="order-total">Total: Rs. ${order.total.toFixed(0)}</div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 10px;">
-                    <button class="btn btn-secondary" disabled onclick="event.stopPropagation(); managerDashboard.openManagerOrderEditModal('${order.id}'); return false;">✏️ Edit Order</button>
-                    <button class="btn btn-primary" disabled onclick="event.stopPropagation(); managerDashboard.showManagerPrintModal('${order.id}'); return false;">🖨️ Print Slip</button>
+                    <button class="btn btn-secondary"  onclick="event.stopPropagation(); managerDashboard.openManagerOrderEditModal('${order.id}'); return false;">✏️ Edit Order</button>
+                    <button class="btn btn-primary"  onclick="event.stopPropagation(); managerDashboard.showManagerPrintModal('${order.id}'); return false;">🖨️ Print Slip</button>
                     ${order.status === 'pending' ? `
                         <button class="btn btn-warning" onclick="event.stopPropagation(); managerDashboard.openPaymentModal('${order.id}'); return false;">💰 Paid</button>
                     ` : `
