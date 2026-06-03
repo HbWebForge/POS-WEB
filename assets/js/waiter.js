@@ -62,6 +62,7 @@ class WaiterDashboard {
         // Modal Close
         document.querySelector('.modal-close').addEventListener('click', () => {
             this.closeOrderDetailsModal();
+            console.log("hello");
         });
 
         // Edit Order Button
@@ -612,6 +613,7 @@ class WaiterDashboard {
 
     closeOrderDetailsModal() {
         document.getElementById('orderDetailsModal').classList.remove('active');
+        console.log("Closing order details modal");
         this.editingOrderId = null;
     }
 

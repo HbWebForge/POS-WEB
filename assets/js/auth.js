@@ -2,8 +2,8 @@
 const AuthDB = {
     // Restaurant Details
     restaurant: {
-        name: 'FastFood Restaurant',
-        address: '123 Main Street, Karachi, Pakistan',
+        name: ' RFC FastFood Restaurant',
+        address: '123 Main Street, Narowal, Pakistan',
         phone: '+92-300-1234567',
         bankAccount: { name: 'Bank Account', number: '12345-67890123-4' },
         easypaisa: { name: 'EasyPaisa Account', number: '0300-1234567' },

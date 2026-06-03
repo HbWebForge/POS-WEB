@@ -21,7 +21,7 @@ class ManagerDashboard {
         this.renderDashboard();
         this.updateUserInfo();
         this.updateClock();
-        setInterval(() => this.updateClock(), 1000);
+        setInterval(() => this.updateClock(), 2000);
     }
 
     setupEventListeners() {
@@ -126,7 +126,11 @@ class ManagerDashboard {
             return;
         }
 
-        const ordersHtml = orders.map(order => `
+        const ordersHtml = orders.map(order => {
+            // Create items display with names and numbers
+            const itemsDisplay = order.items.map(item => `${item.name} x${item.quantity}`).join(', ');
+            
+            return `
             <div class="order-card ${order.status}">
                 <div class="order-card-header">
                     <span class="order-card-id">${order.id}</span>
@@ -136,21 +140,21 @@ class ManagerDashboard {
                     <p><strong>Customer:</strong> ${order.customer}</p>
                     <p><strong>Type:</strong> ${order.type}</p>
                     <p><strong>Waiter:</strong> ${order.waiter}</p>
-                    <p><strong>Items:</strong> ${order.items.length}</p>
+                    <p><strong>Items:</strong> ${itemsDisplay}</p>
                 </div>
                 <div class="order-total">Total: Rs. ${order.total.toFixed(0)}</div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 10px;">
+                    <button class="btn btn-secondary" disabled onclick="event.stopPropagation(); managerDashboard.openManagerOrderEditModal('${order.id}'); return false;">✏️ Edit Order</button>
+                    <button class="btn btn-primary" disabled onclick="event.stopPropagation(); managerDashboard.showManagerPrintModal('${order.id}'); return false;">🖨️ Print Slip</button>
                     ${order.status === 'pending' ? `
-                        <button class="btn btn-secondary" onclick="event.stopPropagation(); managerDashboard.openManagerOrderEditModal('${order.id}'); return false;">✏️ Edit</button>
-                        <button class="btn btn-success" onclick="event.stopPropagation(); managerDashboard.completeOrder('${order.id}'); return false;">✅ Complete</button>
-                        <button class="btn btn-warning" onclick="event.stopPropagation(); managerDashboard.markAsPaid('${order.id}'); return false;">💰 Mark Paid</button>
-                        <button class="btn btn-primary" onclick="event.stopPropagation(); managerDashboard.showManagerPrintModal('${order.id}'); return false;">🖨️ Print</button>
+                        <button class="btn btn-warning" onclick="event.stopPropagation(); managerDashboard.openPaymentModal('${order.id}'); return false;">💰 Paid</button>
                     ` : `
-                        <button class="btn btn-primary" onclick="event.stopPropagation(); managerDashboard.showManagerPrintModal('${order.id}'); return false;" style="grid-column: 1/-1;">🖨️ Print</button>
+                        <button class="btn btn-success" disabled style="background-color: #27AE60; cursor: default;">✅ Paid & Completed</button>
                     `}
                 </div>
             </div>
-        `).join('');
+            `;
+        }).join('');
 
         container.innerHTML = ordersHtml;
     }
@@ -733,6 +737,48 @@ class ManagerDashboard {
         this.renderManagerOrders();
     }
 
+    openPaymentModal(orderId) {
+        const order = getAllOrders().find(o => o.id === orderId);
+        if (!order || order.status !== 'pending') {
+            alert('Can only process payment for pending orders');
+            return;
+        }
+
+        // Store current order for payment processing
+        this.currentPaymentOrder = order;
+
+        // Update modal with order information
+        document.getElementById('paymentOrderId').textContent = order.id;
+
+        // Display order items in summary
+        const itemsHtml = order.items.map(item => `
+            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee;">
+                <span>${item.name} x${item.quantity}</span>
+                <span>Rs. ${item.total.toFixed(0)}</span>
+            </div>
+        `).join('');
+
+        document.getElementById('paymentOrderSummary').innerHTML = itemsHtml;
+        document.getElementById('paymentSubtotal').textContent = `Rs. ${order.subtotal.toFixed(0)}`;
+        document.getElementById('paymentTax').textContent = `Rs. ${order.tax.toFixed(0)}`;
+        document.getElementById('paymentTotal').textContent = `Rs. ${order.total.toFixed(0)}`;
+
+        // Update payment method information
+        document.getElementById('easyPaisaInfo').textContent = `Account: ${AuthDB.restaurant.easypaisa.number} (${AuthDB.restaurant.easypaisa.name})`;
+        document.getElementById('jazzCashInfo').textContent = `Account: ${AuthDB.restaurant.jazzcash.number} (${AuthDB.restaurant.jazzcash.name})`;
+        document.getElementById('bankInfo').textContent = `Account: ${AuthDB.restaurant.bankAccount.number} (${AuthDB.restaurant.bankAccount.name})`;
+
+        // Reset payment method selection
+        document.querySelectorAll('.payment-method').forEach(method => {
+            method.style.borderColor = '#ddd';
+            method.style.backgroundColor = 'transparent';
+        });
+        document.getElementById('paymentPrintBtn').disabled = true;
+        this.selectedPaymentMethod = null;
+
+        document.getElementById('paymentModal').classList.remove('hidden');
+    }
+
     renderDealsPage() {
         this.renderDealProductSelector();
         this.renderDealsList();
@@ -1131,7 +1177,7 @@ Delivery Charge: Rs. ${order.deliveryCharge || 0}
                 <td>${product.icon}</td>
                 <td>${product.name}</td>
                 <td>${category ? category.name : 'N/A'}</td>
-                <td>₹${product.price}</td>
+                <td>Rs.${product.price}</td>
                 <td>
                     <button class="btn-edit" onclick="managerDashboard.editProduct(${product.id}, '${product.name}', ${product.price}, '${product.icon}')">Edit</button>
                     <button class="btn-delete" onclick="managerDashboard.deleteProduct(${product.id})">Delete</button>
@@ -1251,4 +1297,62 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function closeEditModal() {
     document.getElementById('editModal').classList.remove('active');
+}
+
+function closePaymentModal() {
+    document.getElementById('paymentModal').classList.add('hidden');
+    managerDashboard.selectedPaymentMethod = null;
+}
+
+function selectPaymentMethod(element) {
+    // Remove previous selection
+    document.querySelectorAll('.payment-method').forEach(method => {
+        method.style.borderColor = '#ddd';
+        method.style.backgroundColor = 'transparent';
+    });
+
+    // Highlight selected method
+    element.style.borderColor = '#27AE60';
+    element.style.backgroundColor = '#f0f8f0';
+
+    // Store selected method
+    managerDashboard.selectedPaymentMethod = element.dataset.method;
+
+    // Enable print button
+    document.getElementById('paymentPrintBtn').disabled = false;
+}
+
+function completePaymentProcess() {
+    if (!managerDashboard.selectedPaymentMethod) {
+        alert('Please select a payment method');
+        return;
+    }
+
+    if (!managerDashboard.currentPaymentOrder) {
+        alert('No order selected');
+        return;
+    }
+
+    const order = managerDashboard.currentPaymentOrder;
+
+    // Update order status to "paid and completed"
+    order.paymentMethod = managerDashboard.selectedPaymentMethod;
+    order.status = 'paid';
+    order.paidAt = new Date().toLocaleString();
+
+    AuthDB.saveToLocalStorage();
+
+    // Show print slip
+    managerDashboard.showManagerPrintModal(order.id);
+
+    // Close payment modal
+    closePaymentModal();
+
+    // Show notification
+    managerDashboard.showNotification('Payment processed successfully! Order marked as Paid & Completed');
+
+    // Refresh orders display after a short delay
+    setTimeout(() => {
+        managerDashboard.renderManagerOrders();
+    }, 1000);
 }

@@ -72,7 +72,7 @@
                             <input type="text" id="deliveryName" placeholder="Customer Name *" data-type="delivery">
                             <input type="text" id="deliveryAddress" placeholder="Delivery Address *" data-type="delivery">
                             <input type="tel" id="deliveryPhone" placeholder="Phone Number *" data-type="delivery">
-                            <input type="number" id="deliveryCharge" placeholder="Delivery Charge (Rs.)" data-type="delivery" value="">
+                            <input type="number" id="deliveryCharge" placeholder="Delivery Charge (Rs.)" data-type="delivery" value="100">
                         </div>
                     </div>
 
@@ -114,7 +114,7 @@
     </div>
 
     <!-- Order Details Modal -->
-    <div id="orderDetailsModal" class="modal">
+  <div id="orderDetailsModal" class="modal hidden active">
         <div class="modal-content">
             <div class="modal-header">
                 <h2 id="modalOrderId">Order Details</h2>
@@ -132,14 +132,14 @@
                     </div>
                 </div>
 
-                <!-- Add Items Section -->
+             
                 <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #ddd;">
                     <h3>Add More Items</h3>
                     <div class="category-tabs" id="editCategoryTabs"></div>
                     <div class="menu-items" id="editMenuItems"></div>
                 </div>
 
-                <!-- Current Items -->
+            
                 <div>
                     <h3>Current Items</h3>
                     <div class="cart-items" id="editCartItems"></div>

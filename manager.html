@@ -67,7 +67,7 @@
             <!-- Reports & Top Products -->
             <div class="manager-content">
                 <div class="report-section">
-                    <h2 class="section-title">📊 Top Selling Products (This Month)</h2>
+                    <h2 class="section-title">📊 Top Selling Products </h2>
                     <ul class="top-products" id="topProducts"></ul>
                 </div>
 
@@ -94,6 +94,61 @@
                 <button class="btn btn-secondary" onclick="backToDashboard()">⬅️ Back to Dashboard</button>
             </div>
             <div class="orders-list" id="managerOrdersList"></div>
+        </div>
+
+        <!-- Payment Modal -->
+        <div id="paymentModal" class="modal hidden">
+            <div class="modal-content" style="max-width: 900px;">
+                <div class="modal-header">
+                    <h2>Process Payment - Order <span id="paymentOrderId"></span></h2>
+                    <button class="modal-close" onclick="closePaymentModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <!-- Left Side: Order Summary -->
+                        <div style="border-right: 1px solid #ddd; padding-right: 20px;">
+                            <h3>Order Summary</h3>
+                            <div id="paymentOrderSummary" style="background: #f9f9f9; padding: 15px; border-radius: 8px;">
+                                <!-- Items will be populated here -->
+                            </div>
+                            <div style="margin-top: 15px; padding: 15px; background: #f0f0f0; border-radius: 8px;">
+                                <p><strong>Subtotal:</strong> <span id="paymentSubtotal">Rs. 0</span></p>
+                                <p><strong>Discount (5%):</strong> <span id="paymentTax">Rs. 0</span></p>
+                                <p style="font-size: 18px; color: #27AE60; border-top: 1px solid #ddd; padding-top: 10px; margin-top: 10px;">
+                                    <strong>Total:</strong> <span id="paymentTotal">Rs. 0</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Right Side: Payment Methods -->
+                        <div>
+                            <h3>Select Payment Method</h3>
+                            <div id="paymentMethodsContainer" style="display: grid; grid-template-columns: 1fr; gap: 10px;">
+                                <div class="payment-method" data-method="cash" onclick="selectPaymentMethod(this)" style="padding: 15px; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; transition: all 0.3s;">
+                                    <strong>💵 Cash Payment</strong>
+                                    <p style="margin: 5px 0 0 0; font-size: 12px; color: #666;">Pay in cash at the counter</p>
+                                </div>
+                                <div class="payment-method" data-method="easypaisa" onclick="selectPaymentMethod(this)" style="padding: 15px; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; transition: all 0.3s;">
+                                    <strong>📱 EasyPaisa</strong>
+                                    <p id="easyPaisaInfo" style="margin: 5px 0 0 0; font-size: 12px; color: #666;"></p>
+                                </div>
+                                <div class="payment-method" data-method="jazzcash" onclick="selectPaymentMethod(this)" style="padding: 15px; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; transition: all 0.3s;">
+                                    <strong>📱JazzCash</strong>
+                                    <p id="jazzCashInfo" style="margin: 5px 0 0 0; font-size: 12px; color: #666;"></p>
+                                </div>
+                                <div class="payment-method" data-method="bank" onclick="selectPaymentMethod(this)" style="padding: 15px; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; transition: all 0.3s;">
+                                    <strong>🏦 Bank Account</strong>
+                                    <p id="bankInfo" style="margin: 5px 0 0 0; font-size: 12px; color: #666;"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closePaymentModal()">⬅️ Back</button>
+                    <button class="btn btn-primary" id="paymentPrintBtn" onclick="completePaymentProcess()" disabled>🖨️ Print</button>
+                </div>
+            </div>
         </div>
 
         <!-- Create Order Page (Manager) -->
@@ -133,7 +188,7 @@
                             <input type="text" id="managerDeliveryName" placeholder="Customer Name *" data-type="delivery">
                             <input type="text" id="managerDeliveryAddress" placeholder="Delivery Address *" data-type="delivery">
                             <input type="tel" id="managerDeliveryPhone" placeholder="Phone Number *" data-type="delivery">
-                            <input type="number" id="managerDeliveryCharge" placeholder="Delivery Charge (Rs.)" data-type="delivery" value="100">
+                            <input type="number" id="managerDeliveryCharge" placeholder="Delivery Charge (Rs.)" data-type="delivery" value="">
                         </div>
                     </div>
 
@@ -145,7 +200,7 @@
                             <span id="managerSubtotal">Rs. 0</span>
                         </div>
                         <div class="summary-row">
-                            <span>Tax (5%):</span>
+                            <span>Discount (5%):</span>
                             <span id="managerTaxAmount">Rs. 0</span>
                         </div>
                         <div class="summary-row total">
