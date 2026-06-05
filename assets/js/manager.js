@@ -752,7 +752,7 @@ class ManagerDashboard {
 
         // Display order items in summary
         const itemsHtml = order.items.map(item => `
-            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee;">
+            <div style="display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #eee;">
                 <span>${item.name} x${item.quantity}</span>
                 <span>Rs. ${item.total.toFixed(0)}</span>
             </div>
@@ -955,19 +955,19 @@ Delivery Charge: Rs. ${order.deliveryCharge || 0}
                 <h3>${AuthDB.restaurant.name}</h3>
                 <p>${AuthDB.restaurant.address}</p>
                 <p>Phone: ${AuthDB.restaurant.phone}</p>
-                <div style="border-top: 2px dashed #333; margin: 10px 0;"></div>
+                <div style="border-top: 2px dashed #333; margin: 5px 0;"></div>
                 
                 <p><strong>Order ID: ${order.id}</strong></p>
                 <p>Date: ${order.submittedAt}</p>
                 <p>Type: ${order.type}</p>
                 <p>Status: ${order.status.toUpperCase()}</p>
                 
-                ${deliveryInfo ? `<div style="text-align: left; margin: 10px 0; padding: 10px; background: #f0f0f0;">
+                ${deliveryInfo ? `<div style="text-align: left; margin: 5px 0; padding: 5px; background: #f0f0f0;">
                     <strong>Delivery Details:</strong><br/>
                     ${deliveryInfo}
                 </div>` : ''}
                 
-                <div style="border-top: 1px dashed #333; margin: 10px 0; text-align: left;">
+                <div style="border-top: 1px dashed #333; margin: 5px 0; text-align: left;">
                     <strong>Items:</strong>
                     <pre>${itemsHtml}</pre>
                 </div>
