@@ -22,7 +22,9 @@ const AuthDB = {
         { id: 2, name: 'Pizza', icon: '🍕' },
         { id: 3, name: 'Drinks', icon: '🥤' },
         { id: 4, name: 'Sides', icon: '🍟' },
-        { id: 5, name: 'Desserts', icon: '🍰' }
+        { id: 5, name: 'Desserts', icon: '🍰' },
+        { id: 6, name: 'Biryani', icon: '🥘' },
+        { id: 7, name: 'Pasta', icon: '🍝' },
     ],
 
     products: [
@@ -37,7 +39,11 @@ const AuthDB = {
         { id: 9, name: 'French Fries', category: 4, price: 300, icon: '🍟' },
         { id: 10, name: 'Chicken Nuggets', category: 4, price: 400, icon: '🍗' },
         { id: 11, name: 'Cake', category: 5, price: 350, icon: '🍰' },
-        { id: 12, name: 'Ice Cream', category: 5, price: 300, icon: '🍦' }
+        { id: 12, name: 'Ice Cream', category: 5, price: 300, icon: '🍦' },
+        { id: 13, name: 'Full Biryani', category: 6, price: 300, icon: '🥘' },
+        { id: 14, name: 'Half Biryani', category: 6, price: 150, icon: '🥘' },
+        { id: 15, name: 'Half Pasta', category: 7, price: 300, icon: '🍝' },
+        { id: 15, name: 'Full Pasta', category: 7, price: 600, icon: '🍝' },
     ],
 
     deals: [],

@@ -1039,10 +1039,11 @@ Delivery Charge: Rs. ${order.deliveryCharge || 0}
         const topProducts = getTopSellingProducts(30); // Last 30 days
 
         if (topProducts.length === 0) {
+
             container.innerHTML = '<p style="text-align: center; padding: 20px; color: #999;">No sales data available</p>';
             return;
         }
-
+if(!item.product) return; // Skip if product data is missing
         topProducts.forEach((item, index) => {
             const li = document.createElement('li');
             li.className = 'product-item';
