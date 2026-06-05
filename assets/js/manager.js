@@ -752,7 +752,7 @@ class ManagerDashboard {
 
         // Display order items in summary
         const itemsHtml = order.items.map(item => `
-            <div style="display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #eee;">
+            <div style="display: flex; align-items: start;  justify-content: flex-start; padding: 5px 0; border-bottom: 1px solid #eee;">
                 <span>${item.name} x${item.quantity}</span>
                 <span>Rs. ${item.total.toFixed(0)}</span>
             </div>
