@@ -394,7 +394,7 @@ class ManagerDashboard {
 
         const subtotal = cart.reduce((sum, item) => sum + item.total, 0);
         const tax = subtotal * 0.05;
-        const total = subtotal + tax;
+        const total = subtotal - tax;
 
         const subtotalEl = document.getElementById('managerSubtotal');
         const taxEl = document.getElementById('managerTaxAmount');
@@ -422,7 +422,7 @@ class ManagerDashboard {
         const customerName = document.getElementById('managerCustomerName').value || 'Guest';
         const subtotal = cart.reduce((sum, item) => sum + item.total, 0);
         const tax = subtotal * 0.05;
-        let total = subtotal + tax;
+        let total = subtotal - tax;
 
         const orderData = {
             waiter: this.user.name,
@@ -697,7 +697,7 @@ class ManagerDashboard {
         // Recalculate totals
         order.subtotal = order.items.reduce((sum, item) => sum + (item.total || 0), 0);
         order.tax = order.subtotal * 0.05;
-        order.total = order.subtotal + order.tax;
+        order.total = order.subtotal - order.tax;
 
         AuthDB.saveToLocalStorage();
 
@@ -962,19 +962,19 @@ Delivery Charge: Rs. ${order.deliveryCharge || 0}
                 <p>Type: ${order.type}</p>
                 <p>Status: ${order.status.toUpperCase()}</p>
                 
-                ${deliveryInfo ? `<div style="text-align: left; margin: 5px 0; padding: 5px; background: #f0f0f0;">
+                ${deliveryInfo ? `<div style="text-align: center; margin: 5px 0; padding: 5px; background: #f0f0f0;">
                     <strong>Delivery Details:</strong><br/>
                     ${deliveryInfo}
                 </div>` : ''}
                 
                 <div style="border-top: 1px dashed #333; margin: 5px 0; text-align: left;">
                     <strong>Items:</strong>
-                    <pre>${itemsHtml}</pre>
+                    <p style="text-align:left;" >${itemsHtml}</p>
                 </div>
                 
                 <div style="border-top: 2px dashed #333; margin: 10px 0;">
                     <p>Subtotal: Rs. ${order.subtotal.toFixed(0)}</p>
-                    <p>Tax (5%): Rs. ${order.tax.toFixed(0)}</p>
+                    <p>discount (5%): Rs. ${order.tax.toFixed(0)}</p>
                     ${order.deliveryCharge ? `<p>Delivery: Rs. ${order.deliveryCharge.toFixed(0)}</p>` : ''}
                     <p><strong>Total: Rs. ${order.total.toFixed(0)}</strong></p>
                 </div>
