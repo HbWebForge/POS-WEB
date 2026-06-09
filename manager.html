@@ -11,7 +11,7 @@
     <!-- Sidebar -->
     <nav class="sidebar">
         <div class="sidebar-header">
-            <h2>🍔 FastFood POS</h2>
+            <h2>👨🏻‍🍳 Rehman Food Center</h2>
             <p id="userRole" class="user-role"></p>
         </div>
         <ul class="sidebar-nav">
@@ -20,8 +20,8 @@
             <li><a href="#" class="nav-link" data-page="new-order">📝 Create Order</a></li>
             <li><a href="#" class="nav-link" data-page="reports">📈 Reports</a></li>
             <li><a href="#" class="nav-link" data-page="deals">🎁 Deals</a></li>
-            <li><a href="#" class="nav-link" data-page="categories">🏷️ Categories</a></li>
-            <li><a href="#" class="nav-link" data-page="products">🍽️ Products</a></li>
+            <li><a href="#" class="nav-link" style="display: none;" data-page="categories">🏷️ Categories</a></li>
+            <li><a href="#" class="nav-link"  style="display: none;" data-page="products">🍽️ Products</a></li>
         </ul>
         <div class="sidebar-footer">
             <button class="logout-btn" id="logoutBtn">🚪 Logout</button>
@@ -114,7 +114,7 @@
                             </div>
                             <div style="margin-top: 15px; padding: 15px; background: #f0f0f0; border-radius: 8px;">
                                 <p><strong>Subtotal:</strong> <span id="paymentSubtotal">Rs. 0</span></p>
-                                <p><strong>Discount (5%):</strong> <span id="paymentTax">Rs. 0</span></p>
+                                <p><strong>Discount (0%):</strong> <span id="paymentTax">Rs. 0</span></p>
                                 <p style="font-size: 18px; color: #27AE60; border-top: 1px solid #ddd; padding-top: 10px; margin-top: 10px;">
                                     <strong>Total:</strong> <span id="paymentTotal">Rs. 0</span>
                                 </p>
@@ -201,7 +201,7 @@
                             <span id="managerSubtotal">Rs. 0</span>
                         </div>
                         <div class="summary-row">
-                            <span>Discount (5%):</span>
+                            <span>Discount (0%):</span>
                             <span id="managerTaxAmount">Rs. 0</span>
                         </div>
                         <div class="summary-row total">

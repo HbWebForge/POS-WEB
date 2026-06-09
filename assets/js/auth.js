@@ -2,12 +2,12 @@
 const AuthDB = {
   // Restaurant Details
   restaurant: {
-    name: "  FastFood Restaurant",
-    address: "123 Main Street, Narowal, Pakistan",
-    phone: "+92-300-1234567",
+    name: "  Rehman Food Center",
+    address: "Adda Dhabliwala Zafarwal Road, Narowal",
+    phone: "+92-3402521223",
     bankAccount: { name: "Bank Account", number: "12345-67890123-4" },
-    easypaisa: { name: "EasyPaisa Account", number: "0300-1234567" },
-    jazzcash: { name: "JazzCash Account", number: "0310-1234567" },
+    easypaisa: { name: "EasyPaisa Account", number: "03402521223" },
+    jazzcash: { name: "JazzCash Account", number: "03402521223" },
   },
 
   // Demo users
@@ -26,9 +26,9 @@ const AuthDB = {
     },
     admin: {
       username: "admin",
-      password: "1234",
+      password: "Rfc@223",
       role: "manager",
-      name: "Manager",
+      name: "RFC",
     },
   },
 

@@ -396,7 +396,7 @@ class ManagerDashboard {
         if (!cart) cart = this.getManagerCart();
 
         const subtotal = cart.reduce((sum, item) => sum + item.total, 0);
-        const tax = subtotal * 0.05;
+        const tax = subtotal * 0.00;
         const total = subtotal - tax;
 
         const subtotalEl = document.getElementById('managerSubtotal');
@@ -424,7 +424,7 @@ class ManagerDashboard {
 
         const customerName = document.getElementById('managerCustomerName').value || 'Guest';
         const subtotal = cart.reduce((sum, item) => sum + item.total, 0);
-        const tax = subtotal * 0.05;
+        const tax = subtotal * 0.00;
         let total = subtotal - tax;
 
         const orderData = {
@@ -699,7 +699,7 @@ class ManagerDashboard {
 
         // Recalculate totals
         order.subtotal = order.items.reduce((sum, item) => sum + (item.total || 0), 0);
-        order.tax = order.subtotal * 0.05;
+        order.tax = order.subtotal * 0;
         order.total = order.subtotal - order.tax;
 
         AuthDB.saveToLocalStorage();
@@ -987,7 +987,7 @@ Delivery Charge: Rs. ${order.deliveryCharge || 0}
         receipt += LINE;
 
         receipt += 'Subtotal: Rs. ' + order.subtotal.toFixed(0) + '\n';
-        receipt += 'Discount (5%): Rs. ' + order.tax.toFixed(0) + '\n';
+        receipt += 'Discount (0%): Rs. ' + order.tax.toFixed(0) + '\n';
         if (order.deliveryCharge) {
             receipt += 'Delivery: Rs. ' + order.deliveryCharge.toFixed(0) + '\n';
         }
@@ -1017,7 +1017,7 @@ Delivery Charge: Rs. ${order.deliveryCharge || 0}
                 </div>
                 <div style="border-top: 2px dashed #333; margin: 10px 0;">
                     <p>Subtotal: Rs. ${order.subtotal.toFixed(0)}</p>
-                    <p>Discount (5%): Rs. ${order.tax.toFixed(0)}</p>
+                    <p>Discount (0%): Rs. ${order.tax.toFixed(0)}</p>
                     ${order.deliveryCharge ? `<p>Delivery: Rs. ${order.deliveryCharge.toFixed(0)}</p>` : ''}
                     <p><strong>Total: Rs. ${order.total.toFixed(0)}</strong></p>
                 </div>
@@ -1097,14 +1097,14 @@ printViaBrowser() {
                 @media print {
                     @page { 
                         size: 80mm auto; 
-                        margin: 0; 
+                        margin: 10px 0; 
                         text-algin:center;
                     }
                     body { 
                        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;; 
                         font-size: 18px; 
                         width: 72mm;  /* 80mm paper - margins */
-                        margin: 0;
+                        margin: 10px 0;
                         padding: 2mm;
                         text-algin:center;
                     }
@@ -1113,6 +1113,7 @@ printViaBrowser() {
                 body { 
                     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;; 
                     font-size: 18px; 
+                    margin:10px 0;
                     width: 72mm;
                      text-align: center;
                 }
