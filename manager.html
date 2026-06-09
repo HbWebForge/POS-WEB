@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manager Dashboard </title>
     <link rel="stylesheet" href="assets/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/qz-tray@2.2.3/qz-tray.js"></script>
 </head>
 <body class="dashboard">
     <!-- Sidebar -->
@@ -373,21 +374,15 @@
     </div>
 
     <!-- Manager Print Modal -->
-    <div id="managerPrintModal" class="modal hidden">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Order Slip</h2>
-                <button class="modal-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="order-slip print-area" id="managerOrderSlip"></div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeManagerPrintModal()">Close</button>
-                <button class="btn btn-primary" onclick="printManagerOrderSlip()">🖨️ Print</button>
-            </div>
+  <div id="managerPrintModal" class="modal hidden">
+    <div class="modal-content">
+        <div id="managerOrderSlip"></div>
+        <div style="display: flex; gap: 10px; margin-top: 15px;">
+            <button class="btn btn-secondary" onclick="document.getElementById('managerPrintModal').classList.add('hidden')">Close</button>
+            <button class="btn btn-primary" onclick="managerDashboard.printToThermalPrinter()">🖨️ Print Receipt</button>
         </div>
     </div>
+</div>
 
     <!-- Edit Modal -->
     <div id="editModal" class="modal hidden">

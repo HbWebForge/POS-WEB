@@ -2,7 +2,7 @@
 const AuthDB = {
   // Restaurant Details
   restaurant: {
-    name: " RFC FastFood Restaurant",
+    name: "  FastFood Restaurant",
     address: "123 Main Street, Narowal, Pakistan",
     phone: "+92-300-1234567",
     bankAccount: { name: "Bank Account", number: "12345-67890123-4" },
@@ -50,7 +50,7 @@ const AuthDB = {
     { id: 1, name: "Jumbo zinger burger", category: 1, price: 400, icon: "🍔" },
     {  id: 2, name: "Student zinger burger",     category: 1,      price: 350,  icon: "🍔",},
     {  id: 3,  name: "Sizzler zinger burger",  category: 1,  price: 380,  icon: "🍔", },
-    { id: 4, name: "RFC special burger", category: 1, price: 500, icon: "🍔" },
+    { id: 4, name: " special burger", category: 1, price: 500, icon: "🍔" },
     {  id: 5,  name: "Double decker burger",  category: 1, price: 550, icon: "🍔", },
      {   id: 6,  name: "Chicken patty burger",  category: 1,  price: 250,  icon: "🍔",  },
     {  id: 7,name: "Chicken grill burger",category: 1,  price: 550, icon: "🍔",    },
@@ -89,10 +89,10 @@ const AuthDB = {
     { id: 39, name: "M-Crown crust pizza", category: 8, price: 1350, icon: "🍕" },
     { id: 40, name: "L-Crown crust pizza", category: 8, price: 1850, icon: "🍕" },
     { id: 41, name: "XL-Crown crust pizza", category: 8, price: 2450, icon: "🍕" },
-    { id: 42, name: "S-white RFC special pizza", category: 8, price: 650, icon: "🍕" },
-    { id: 43, name: "M-white RFC special pizza", category: 8, price: 1250, icon: "🍕" },
-    { id: 44, name: "L-white RFC special pizza", category: 8, price: 1650, icon: "🍕" },
-    { id: 45, name: "XL-white RFC special pizza", category: 8, price: 2250, icon: "🍕" },
+    { id: 42, name: "S-white  special pizza", category: 8, price: 650, icon: "🍕" },
+    { id: 43, name: "M-white  special pizza", category: 8, price: 1250, icon: "🍕" },
+    { id: 44, name: "L-white  special pizza", category: 8, price: 1650, icon: "🍕" },
+    { id: 45, name: "XL-white  special pizza", category: 8, price: 2250, icon: "🍕" },
     { id: 46, name: "S-malai boti special pizza", category: 8, price: 650, icon: "🍕" },
     { id: 47, name: "M-malai boti special pizza", category: 8, price: 1250, icon: "🍕" },
     { id: 48, name: "L-malai boti special pizza", category: 8, price: 1650, icon: "🍕" },
@@ -346,7 +346,7 @@ function removeItemFromOrder(orderId, itemIndex) {
       0,
     );
     order.tax = order.subtotal * 0.05;
-    order.total = order.subtotal + order.tax;
+    order.total = order.subtotal - order.tax;
     AuthDB.saveToLocalStorage();
     return order;
   }

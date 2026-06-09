@@ -7,6 +7,9 @@ class ManagerDashboard {
         this.editingOrderData = null;
         this.currentCategory = 1;
         this.currentOrderType = 'dine-in';
+        this.currentReceiptData = null;
+        this.currentPaymentOrder = null;
+        this.selectedPaymentMethod = null;
 
         if (!this.user) {
             window.location.href = 'index.html';
@@ -129,7 +132,7 @@ class ManagerDashboard {
         const ordersHtml = orders.map(order => {
             // Create items display with names and numbers
             const itemsDisplay = order.items.map(item => `${item.name} x${item.quantity}`).join(', ');
-            
+
             return `
             <div class="order-card ${order.status}">
                 <div class="order-card-header">
@@ -461,7 +464,7 @@ class ManagerDashboard {
 
         addOrder(orderData);
         alert('Order created successfully!');
-        
+
         window.managerCart = [];
         this.updateManagerCartDisplay();
         document.getElementById('managerCustomerName').value = '';
@@ -484,7 +487,7 @@ class ManagerDashboard {
         this.editingOrderData = JSON.parse(JSON.stringify(order));
 
         document.getElementById('managerEditOrderId').textContent = `Edit Order ${order.id}`;
-        
+
         // Render categories and menu
         this.renderManagerEditCategories();
         this.renderManagerEditMenuItems();
@@ -879,9 +882,9 @@ class ManagerDashboard {
                 border-radius: 8px;
                 margin-bottom: 15px;
             `;
-            
+
             const itemsList = deal.items.map(item => `${item.icon} ${item.name}`).join(', ');
-            
+
             dealCard.innerHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
                     <div>
@@ -928,13 +931,17 @@ class ManagerDashboard {
         }
     }
 
+    // ============================
+    // FIXED PRINT FUNCTIONS
+    // ============================
+
     showManagerPrintModal(orderId) {
         const order = getAllOrders().find(o => o.id === orderId);
         if (!order) return;
 
-        const itemsHtml = order.items.map(item => `
-            ${item.name} x${item.quantity} = Rs. ${item.total.toFixed(0)}
-        `).join('\n');
+        const itemsHtml = order.items.map(item => 
+            `${item.name} x${item.quantity} = Rs. ${item.total.toFixed(0)}`
+        ).join('\n');
 
         const deliveryInfo = order.type === 'delivery' ? `
 Customer Name: ${order.deliveryName}
@@ -943,54 +950,195 @@ Phone: ${order.deliveryPhone}
 Delivery Charge: Rs. ${order.deliveryCharge || 0}
 ` : '';
 
-        const paymentMethods = {
-            cash: 'Cash Payment',
-            bank: `Bank Transfer\nAccount: ${AuthDB.restaurant.bankAccount.number}\nName: ${AuthDB.restaurant.bankAccount.name}`,
-            easypaisa: `EasyPaisa\nAccount: ${AuthDB.restaurant.easypaisa.number}\nName: ${AuthDB.restaurant.easypaisa.name}`,
-            jazzcash: `JazzCash\nAccount: ${AuthDB.restaurant.jazzcash.number}\nName: ${AuthDB.restaurant.jazzcash.name}`
-        };
+        // ESC/POS Commands for thermal printer
+        const ESC = '\x1B';
+        const GS = '\x1D';
+        const INIT = ESC + '@';              // Initialize printer
+        const CENTER = ESC + 'a' + '\x01'; // Center alignment
+        const LEFT = ESC + 'a' + '\x00';   // Left alignment
+        const BOLD_ON = ESC + 'E' + '\x01'; // Bold on
+        const BOLD_OFF = ESC + 'E' + '\x00'; // Bold off
+        const CUT = GS + 'V' + '\x00';     // Full cut
+        const FEED = ESC + 'd' + '\x05';   // Feed 5 lines
+        const LINE = '--------------------------------\n';
 
+        // Build receipt text with ESC/POS commands
+        let receipt = INIT;
+        receipt += CENTER;
+        receipt += BOLD_ON + AuthDB.restaurant.name + '\n' + BOLD_OFF;
+        receipt += AuthDB.restaurant.address + '\n';
+        receipt += 'Phone: ' + AuthDB.restaurant.phone + '\n';
+        receipt += LINE;
+
+        receipt += LEFT;
+        receipt += 'Order ID: ' + order.id + '\n';
+        receipt += 'Date: ' + order.submittedAt + '\n';
+        receipt += 'Type: ' + order.type + '\n';
+        receipt += 'Status: ' + order.status.toUpperCase() + '\n';
+
+        if (deliveryInfo) {
+            receipt += 'Delivery Details:\n';
+            receipt += deliveryInfo + '\n';
+        }
+
+        receipt += LINE;
+        receipt += 'ITEMS:\n';
+        receipt += itemsHtml + '\n';
+        receipt += LINE;
+
+        receipt += 'Subtotal: Rs. ' + order.subtotal.toFixed(0) + '\n';
+        receipt += 'Discount (5%): Rs. ' + order.tax.toFixed(0) + '\n';
+        if (order.deliveryCharge) {
+            receipt += 'Delivery: Rs. ' + order.deliveryCharge.toFixed(0) + '\n';
+        }
+        receipt += BOLD_ON + 'TOTAL: Rs. ' + order.total.toFixed(0) + '\n' + BOLD_OFF;
+        receipt += LINE;
+        receipt += 'Thank you for your order!\n';
+        receipt += FEED;
+        receipt += CUT;
+
+        // Show in modal (for preview)
         const slipHtml = `
-            <div style="font-family: 'Courier New', monospace; font-size: 12px; line-height: 1.6; text-align: center;">
+            <div style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; font-size: 18px; line-height: 1.6; text-align: center;">
                 <h3>${AuthDB.restaurant.name}</h3>
                 <p>${AuthDB.restaurant.address}</p>
                 <p>Phone: ${AuthDB.restaurant.phone}</p>
                 <div style="border-top: 2px dashed #333; margin: 5px 0;"></div>
-                
                 <p><strong>Order ID: ${order.id}</strong></p>
                 <p>Date: ${order.submittedAt}</p>
                 <p>Type: ${order.type}</p>
                 <p>Status: ${order.status.toUpperCase()}</p>
-                
                 ${deliveryInfo ? `<div style="text-align: center; margin: 5px 0; padding: 5px; background: #f0f0f0;">
-                    <strong>Delivery Details:</strong><br/>
-                    ${deliveryInfo}
+                    <strong>Delivery Details:</strong><br/>${deliveryInfo}
                 </div>` : ''}
-                
-                <div style="border-top: 1px dashed #333; margin: 5px 0; text-align: left;">
+                <div style="border-top: 1px dashed #333; margin: 5px 0; text-align: center;">
                     <strong>Items:</strong>
-                    <p style="text-align:left;" >${itemsHtml}</p>
+                    <p style="text-align:left;">${itemsHtml}</p>
                 </div>
-                
                 <div style="border-top: 2px dashed #333; margin: 10px 0;">
                     <p>Subtotal: Rs. ${order.subtotal.toFixed(0)}</p>
-                    <p>discount (5%): Rs. ${order.tax.toFixed(0)}</p>
+                    <p>Discount (5%): Rs. ${order.tax.toFixed(0)}</p>
                     ${order.deliveryCharge ? `<p>Delivery: Rs. ${order.deliveryCharge.toFixed(0)}</p>` : ''}
                     <p><strong>Total: Rs. ${order.total.toFixed(0)}</strong></p>
                 </div>
-                
-                <div style="border-top: 1px dashed #333; margin: 10px 0; text-align: left; font-size: 11px;">
-                    <strong>Payment Methods Available:</strong>
-                    <pre>${paymentMethods[order.paymentMethod || 'cash']}</pre>
-                </div>
-                
                 <p style="margin-top: 20px; font-size: 10px;">Thank you for your order!</p>
             </div>
         `;
 
         document.getElementById('managerOrderSlip').innerHTML = slipHtml;
         document.getElementById('managerPrintModal').classList.remove('hidden');
+
+        // Store raw receipt data for actual printing
+        this.currentReceiptData = receipt;
     }
+
+    // NEW: Function to actually print to thermal printer
+printToThermalPrinter() {
+    if (!this.currentReceiptData) {
+        alert('No receipt to print');
+        return;
+    }
+
+    if (typeof qz !== 'undefined') {
+        this.printViaQZTray();
+    } else {
+        this.printViaBrowser();
+    }
+}
+
+printViaQZTray() {
+    var _this = this;
+    
+    var doPrint = function() {
+        var config = qz.configs.create("pos printer", {
+            rasterize: false,
+            altPrinting: true,
+            encoding: 'UTF-8'
+        });
+
+        var data = [{
+            type: 'raw',
+            format: 'command',
+            flavor: 'plain',
+            data: _this.currentReceiptData
+        }];
+
+        qz.print(config, data).then(function() {
+            _this.showNotification('Receipt printed successfully!');
+        }).catch(function(err) {
+            console.error('QZ Tray print error:', err);
+            alert('Print failed: ' + err.message + '\n\nFalling back to browser print...');
+            _this.printViaBrowser();
+        });
+    };
+    
+    // Check if already connected
+    if (qz.websocket.isActive()) {
+        doPrint();
+    } else {
+        qz.websocket.connect().then(function() {
+            doPrint();
+        }).catch(function(err) {
+            console.error('QZ Tray connection error:', err);
+            alert('Cannot connect to printer. Please make sure QZ Tray is running.\n\nFalling back to browser print...');
+            _this.printViaBrowser();
+        });
+    }
+}
+
+    
+   // Aapke existing printViaBrowser function ko update karen
+printViaBrowser() {
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+        <html>
+        <head>
+            <style>
+                @media print {
+                    @page { 
+                        size: 80mm auto; 
+                        margin: 0; 
+                        text-algin:center;
+                    }
+                    body { 
+                       font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;; 
+                        font-size: 18px; 
+                        width: 72mm;  /* 80mm paper - margins */
+                        margin: 0;
+                        padding: 2mm;
+                        text-algin:center;
+                    }
+                    .no-print { display: none; }
+                }
+                body { 
+                    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;; 
+                    font-size: 18px; 
+                    width: 72mm;
+                     text-align: center;
+                }
+            </style>
+        </head>
+        <body>
+            <pre>${document.getElementById('managerOrderSlip').innerText}</pre>
+            <div class="no-print" style="margin-top: 20px; text-align: center;">
+                <button onclick="window.print(); setTimeout(()=>window.close(), 500);">
+                    Print Receipt
+                </button>
+            </div>
+            <script>
+                setTimeout(() => {
+                    window.print();
+                    setTimeout(() => window.close(), 1000);
+                }, 300);
+            <\/script>
+        </body>
+        </html>
+    `);
+    printWindow.document.close();
+}
+    // ============================
+    // END FIXED PRINT FUNCTIONS
+    // ============================
 
     renderDashboard() {
         const today = new Date();
@@ -1007,7 +1155,7 @@ Delivery Charge: Rs. ${order.deliveryCharge || 0}
 
         // Revenue calculations
         const dailyRev = calculateDailyRevenue();
-        
+
         const weekStartDate = new Date(today);
         weekStartDate.setDate(today.getDate() - today.getDay());
         const weekEndDate = new Date(weekStartDate);
@@ -1039,12 +1187,12 @@ Delivery Charge: Rs. ${order.deliveryCharge || 0}
         const topProducts = getTopSellingProducts(30); // Last 30 days
 
         if (topProducts.length === 0) {
-
             container.innerHTML = '<p style="text-align: center; padding: 20px; color: #999;">No sales data available</p>';
             return;
         }
-if(!item.product) return; // Skip if product data is missing
+
         topProducts.forEach((item, index) => {
+            if (!item.product) return; // Skip if product data is missing
             const li = document.createElement('li');
             li.className = 'product-item';
             li.innerHTML = `
@@ -1052,7 +1200,7 @@ if(!item.product) return; // Skip if product data is missing
                     <div class="product-name">${index + 1}. ${item.product.icon} ${item.product.name}</div>
                     <div class="product-sold">${item.quantity} units sold</div>
                 </div>
-                <div class=\"product-revenue\">Rs. ${item.revenue.toFixed(0)}</div>
+                <div class="product-revenue">Rs. ${item.revenue.toFixed(0)}</div>
             `;
             container.appendChild(li);
         });
@@ -1061,7 +1209,7 @@ if(!item.product) return; // Skip if product data is missing
     generateReport() {
         const reportType = document.getElementById('reportType').value;
         const reportDate = new Date(document.getElementById('reportDate').value);
-        
+
         let startDate, endDate;
 
         if (reportType === 'daily') {
@@ -1287,6 +1435,45 @@ if(!item.product) return; // Skip if product data is missing
 
         setTimeout(() => notification.remove(), 3000);
     }
+    // QZ Tray se print karna
+
+async printViaQZTray() {
+    if (!this.currentReceiptData) {
+        alert('No receipt to print');
+        return;
+    }
+
+    try {
+        // QZ Tray websocket connect
+        await qz.websocket.connect();
+        
+        // Printer config - exact name jo Windows mein show ho raha hai
+        // Aap "Generic / Text Only" ka name use karen jo aapne banaya
+        var config = qz.configs.create("pos printer", {
+            rasterize: false,       // Raw ESC/POS commands
+            altPrinting: true,      // Alternative printing for thermal
+            encoding: 'UTF-8'
+        });
+
+        // ESC/POS data bhejen
+        var data = [
+            {
+                type: 'raw',
+                format: 'command',
+                flavor: 'plain',
+                data: this.currentReceiptData  // Aapka ESC/POS receipt
+            }
+        ];
+
+        await qz.print(config, data);
+        this.showNotification('Receipt printed successfully!');
+        
+    } catch (err) {
+        console.error('Print error:', err);
+        alert('QZ Tray error: ' + err.message + '\nFalling back to browser print...');
+        this.printViaBrowser();  // Fallback
+    }
+}
 }
 
 // Initialize on page load
@@ -1356,4 +1543,9 @@ function completePaymentProcess() {
     setTimeout(() => {
         managerDashboard.renderManagerOrders();
     }, 1000);
-}
+};
+
+
+
+
+// ------------------------------------------------jz printer----------------------
